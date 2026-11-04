@@ -1,0 +1,20 @@
+Thorium: classic new-tab-page shortcuts (pre-Refresh Chrome layout).
+
+- up to 5 columns, so 10 tiles show as 2 rows of 5 instead of one row of 10
+- no expand/collapse ("收起") tile; all shortcuts are always shown
+
+diff --git a/chrome/browser/resources/new_tab_page/app.html b/chrome/browser/resources/new_tab_page/app.html
+index 6d615b4..50ccdf0 100644
+--- a/chrome/browser/resources/new_tab_page/app.html
++++ b/chrome/browser/resources/new_tab_page/app.html
+@@ -118,8 +118,8 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
+   ${this.lazyRender_ ? html`
+     ${this.shortcutsEnabled_ ? html`
+       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
+-          single-row reflow-on-overflow
+-          ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
++          reflow-on-overflow
++          ?expandable-tiles-enabled="${false}"
+           max-tiles-in-collapsed-state="${this.maxTilesInCollapsedState_}"
+           max-shortcuts-in-expanded-state="${this.maxShortcutsInExpandedState_}"
+           max-most-visited-tiles-in-expanded-state="${this.maxMostVisitedTilesInExpandedState_}"
