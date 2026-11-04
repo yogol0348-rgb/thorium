@@ -182,6 +182,7 @@ other/developer-crx-installation.patch
 # Local fork: Chrome 123 density on top of Th24 (must stay after Th24/classic-omnibox/icon patches).
 other/thorium-chrome123-density.patch
 other/thorium-ntp-classic-shortcuts.patch
+other/thorium-toolbar-order.patch
 
 # 95 - Conditional / platform-specific overlays that are still active.
 [raspi] other/linux-widevine-cdm-locations.patch
