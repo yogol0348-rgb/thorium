@@ -1,11 +1,9 @@
 Thorium: Chrome 123 toolbar button order (only with chrome://flags/#thorium-2024).
 
-- left:  back, forward, home, reload   (upstream: back, forward, reload, home)
-- right: pinned toolbar actions (e.g. Chrome Labs) | extensions menu
-         (upstream: extensions menu | pinned toolbar actions)
+- left: back, forward, home, reload   (upstream: back, forward, reload, home)
 
 diff --git a/chrome/browser/ui/views/toolbar/toolbar_view.cc b/chrome/browser/ui/views/toolbar/toolbar_view.cc
-index ae94b72..d3e0b4d 100644
+index ae94b72..df831e9 100644
 --- a/chrome/browser/ui/views/toolbar/toolbar_view.cc
 +++ b/chrome/browser/ui/views/toolbar/toolbar_view.cc
 @@ -464,6 +464,12 @@ void ToolbarView::Init() {
@@ -21,22 +19,3 @@ index ae94b72..d3e0b4d 100644
    if (features::EnableRestoreTabButton()) {
      toolbar_divider2_ = AddChildView(std::make_unique<ToolbarDivider>());
      toolbar_divider2_->SetPreferredSize(gfx::Size(
-@@ -542,6 +548,18 @@ void ToolbarView::Init() {
-     pinned_toolbar_actions_ = toolbar_webview_->GetPinnedToolbarActions();
-   }
- 
-+  // Thorium Chrome 123 layout: show pinned toolbar actions (e.g. Chrome Labs)
-+  // to the left of the extensions menu, then the divider, then extensions.
-+  if (features::IsThorium2024() && extensions_container_ &&
-+      pinned_toolbar_actions_container_) {
-+    const size_t extensions_index =
-+        GetIndexOf(extensions_container_.get()).value();
-+    ReorderChildView(pinned_toolbar_actions_container_, extensions_index);
-+    if (toolbar_divider_) {
-+      ReorderChildView(toolbar_divider_, extensions_index + 1);
-+    }
-+  }
-+
-   if (IsChromeLabsEnabled()) {
-     UpdateChromeLabsNewBadgePrefs(browser_->GetProfile());
- 
