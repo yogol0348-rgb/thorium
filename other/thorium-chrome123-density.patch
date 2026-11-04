@@ -1,0 +1,168 @@
+Thorium "Chrome 123 density" for the Thorium 2024 (Th24) UI.
+
+Keeps Th24 shapes and colours but restores pre-Refresh Chrome (M123) spacing:
+- toolbar: 34px location bar, 4/8px interior margins, wider icon spacing
+- bookmark bar: 28px buttons + 4px margin, 8px icon-label padding
+- Windows 10 menus: M123 separators (7/5/5), check-region reserve, padding
+- app menu: no item icons (as in M123)
+Only active when chrome://flags/#thorium-2024 is enabled.
+
+diff --git a/chrome/browser/ui/layout_constants.cc b/chrome/browser/ui/layout_constants.cc
+index f9f3b4c..b67d8d7 100644
+--- a/chrome/browser/ui/layout_constants.cc
++++ b/chrome/browser/ui/layout_constants.cc
+@@ -33,18 +33,17 @@ int GetLayoutConstant(LayoutConstant constant) {
+     case LayoutConstant::kBookmarkBarHeight: {
+       // The fixed margin ensures the bookmark buttons appear centered relative
+       // to the white space above and below.
+-      const int bookmark_bar_attached_vertical_margin = thorium_2024 ? 3 : 6;
++      // Thorium Chrome 123 density: match pre-Refresh Chrome spacing.
++      const int bookmark_bar_attached_vertical_margin = thorium_2024 ? 4 : 6;
+       return GetLayoutConstant(LayoutConstant::kBookmarkBarButtonHeight) +
+              bookmark_bar_attached_vertical_margin;
+     }
+     case LayoutConstant::kBookmarkBarButtonHeight:
+-      return thorium_2024 ? (touch_ui ? 34 : 26) : (touch_ui ? 36 : 28);
++      return thorium_2024 ? (touch_ui ? 34 : 28) : (touch_ui ? 36 : 28);
+     case LayoutConstant::kBookmarkBarButtonPadding:
+-      return thorium_2024
+-                 ? 2
+-                 : GetLayoutConstant(LayoutConstant::kToolbarElementPadding);
++      return GetLayoutConstant(LayoutConstant::kToolbarElementPadding);
+     case LayoutConstant::kBookmarkBarButtonImageLabelPadding:
+-      return 6;
++      return thorium_2024 ? 8 : 6;
+     case LayoutConstant::kWebAppMenuButtonSize:
+       return 24;
+     case LayoutConstant::kWebAppPageActionIconSize:
+@@ -68,7 +67,7 @@ int GetLayoutConstant(LayoutConstant constant) {
+     case LayoutConstant::kLocationBarElementPadding:
+       return touch_ui ? 3 : 2;
+     case LayoutConstant::kLocationBarPageInfoIconVerticalPadding:
+-      return touch_ui ? 3 : (thorium_2024 ? 4 : 5);
++      return touch_ui ? 3 : 5;
+     case LayoutConstant::kLocationBarPageInfoIconLabelExtraTrailingPadding:
+       return 4;
+     case LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding:
+@@ -76,11 +75,11 @@ int GetLayoutConstant(LayoutConstant constant) {
+     case LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding:
+       return 10;
+     case LayoutConstant::kLocationBarTrailingDecorationEdgePadding:
+-      return touch_ui ? 3 : (thorium_2024 ? 6 : 12);
++      return touch_ui ? 3 : 12;
+     case LayoutConstant::kLocationBarTrailingDecorationInnerPadding:
+-      return touch_ui ? 3 : (thorium_2024 ? 6 : 8);
++      return touch_ui ? 3 : 8;
+     case LayoutConstant::kLocationBarHeight:
+-      return thorium_2024 ? (touch_ui ? 34 : 30) : (touch_ui ? 36 : 34);
++      return thorium_2024 ? (touch_ui ? 34 : 34) : (touch_ui ? 36 : 34);
+     // LINT.IfChange(LocationBarIconSize)
+     case LayoutConstant::kLocationBarIconSize:
+       return touch_ui ? 20 : 16;
+@@ -145,17 +144,17 @@ int GetLayoutConstant(LayoutConstant constant) {
+     case LayoutConstant::kToolbarDividerHeight:
+       return touch_ui ? 20 : (thorium_2024 ? 18 : 16);
+     case LayoutConstant::kToolbarDividerSpacing:
+-      return thorium_2024 ? 7 : 9;
++      return 9;
+     case LayoutConstant::kToolbarDividerWidth:
+       return 2;
+     case LayoutConstant::kToolbarElementPadding:
+       return touch_ui ? 0 : 4;
+     case LayoutConstant::kToolbarIconDefaultMargin:
+-      return thorium_2024 ? 2 : (touch_ui ? 0 : 2);
++      return thorium_2024 ? (touch_ui ? 0 : 4) : (touch_ui ? 0 : 2);
+     case LayoutConstant::kToolbarButtonRefreshExpandedMargin:
+       return 5;
+     case LayoutConstant::kLocationBarMargin:
+-      return touch_ui ? 12 : (thorium_2024 ? 7 : 9);
++      return touch_ui ? 12 : (thorium_2024 ? 8 : 9);
+     case LayoutConstant::kSidePanelInset:
+       return 8;
+     case LayoutConstant::kPageInfoIconSize:
+@@ -215,7 +214,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
+ 
+     case LOCATION_BAR_ICON_INTERIOR_PADDING:
+       if (thorium_2024) {
+-        return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 4);
++        return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
+       } else {
+         return gfx::Insets::VH(2, 2);
+       }
+@@ -260,7 +259,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
+ 
+     case TOOLBAR_INTERIOR_MARGIN:
+       return thorium_2024
+-                 ? (touch_ui ? gfx::Insets() : gfx::Insets::VH(3, 6))
++                 ? (touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8))
+                  : (touch_ui ? gfx::Insets::VH(4, 0) : gfx::Insets::VH(6, 6));
+ 
+     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
+diff --git a/chrome/browser/ui/toolbar/app_menu_model.cc b/chrome/browser/ui/toolbar/app_menu_model.cc
+index 17a4ad2..82bf522 100644
+--- a/chrome/browser/ui/toolbar/app_menu_model.cc
++++ b/chrome/browser/ui/toolbar/app_menu_model.cc
+@@ -235,6 +235,10 @@ void AddItemWithStringIdAndVectorIcon(ui::SimpleMenuModel* model,
+                                       int command_id,
+                                       int string_id,
+                                       const gfx::VectorIcon& vector_icon) {
++  // Thorium Chrome 123 density: pre-Refresh app menu has no item icons.
++  if (features::IsThorium2024()) {
++    return model->AddItemWithStringId(command_id, string_id);
++  }
+   return model->AddItemWithStringIdAndIcon(
+       command_id, string_id,
+       ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
+@@ -248,6 +252,9 @@ void AddSubMenuWithStringIdAndVectorIcon(ui::SimpleMenuModel* model,
+                                          int string_id,
+                                          ui::MenuModel* sub_menu,
+                                          const gfx::VectorIcon& vector_icon) {
++  if (features::IsThorium2024()) {
++    return model->AddSubMenuWithStringId(command_id, string_id, sub_menu);
++  }
+   return model->AddSubMenuWithStringIdAndIcon(
+       command_id, string_id, sub_menu,
+       ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
+@@ -956,6 +963,9 @@ bool ArePromotionsEnabled() {
+ void SetCommandIcon(ui::SimpleMenuModel* model,
+                     int command_id,
+                     const gfx::VectorIcon& vector_icon) {
++  if (features::IsThorium2024()) {
++    return;
++  }
+   auto index = model->GetIndexOfCommandId(command_id);
+   if (index) {
+     model->SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
+diff --git a/ui/views/controls/menu/menu_config_win.cc b/ui/views/controls/menu/menu_config_win.cc
+index 0aa697e..d4f9054 100644
+--- a/ui/views/controls/menu/menu_config_win.cc
++++ b/ui/views/controls/menu/menu_config_win.cc
+@@ -42,7 +42,7 @@ void MenuConfig::InitPlatform() {
+       menu_horizontal_border_size = 4;
+       submenu_horizontal_overlap = 1;
+       rounded_menu_vertical_border_size = 4;
+-      item_horizontal_padding = 8;
++      item_horizontal_padding = 12;
+       between_item_vertical_padding = 2;
+       separator_height = 1;
+       separator_upper_height = 1;
+@@ -54,12 +54,14 @@ void MenuConfig::InitPlatform() {
+       menu_horizontal_border_size = 3;
+       submenu_horizontal_overlap = 0;
+       item_vertical_margin = 3;
+-      item_horizontal_border_padding = 0;
++      // Thorium Chrome 123 density: pre-Refresh Windows 10 menu metrics.
++      item_horizontal_border_padding = -2;
+       icon_label_spacing = 10;
+-      separator_height = 5;
+-      separator_upper_height = 3;
+-      separator_lower_height = 3;
+-      separator_spacing_height = 2;
++      always_reserve_check_region = true;
++      separator_height = 7;
++      separator_upper_height = 5;
++      separator_lower_height = 5;
++      separator_spacing_height = 3;
+     }
+   } else {
+     separator_upper_height = 5;
